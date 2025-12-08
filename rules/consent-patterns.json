@@ -1,0 +1,116 @@
+{
+  "knownCMPs": [
+    {
+      "name": "OneTrust",
+      "selectors": {
+        "banner": ["#onetrust-consent-sdk", ".onetrust-pc-dark-filter", ".otFlat"],
+        "acceptButton": ["#onetrust-accept-btn-handler", ".accept-all-handler", ".ot-pc-refuse-all-handler"],
+        "rejectButton": ["#onetrust-reject-all-handler", ".ot-pc-refuse-all-handler"]
+      }
+    },
+    {
+      "name": "Cookiebot",
+      "selectors": {
+        "banner": ["#CybotCookiebotDialog", ".CybotCookiebotDialog"],
+        "acceptButton": ["#CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll", ".CybotCookiebotDialogBodyButton"],
+        "rejectButton": ["#CybotCookiebotDialogBodyButtonDecline", "#CybotCookiebotDialogBodyLevelButtonLevelOptinDeclineAll"]
+      }
+    },
+    {
+      "name": "Quantcast",
+      "selectors": {
+        "banner": [".qc-cmp-ui-container", ".qc-cmp2-container"],
+        "acceptButton": [".qc-cmp-button[mode='primary']", "button[mode='primary']"],
+        "rejectButton": [".qc-cmp-button[mode='secondary']", "button[mode='secondary']"]
+      }
+    },
+    {
+      "name": "TrustArc",
+      "selectors": {
+        "banner": ["#truste-consent-track", ".truste_overlay", "#consent-tracking"],
+        "acceptButton": [".truste-button1", ".pdynamicbutton", ".call"],
+        "rejectButton": [".truste-button2", ".required"]
+      }
+    },
+    {
+      "name": "Didomi",
+      "selectors": {
+        "banner": ["#didomi-host", ".didomi-consent-popup"],
+        "acceptButton": ["#didomi-notice-agree-button", ".didomi-button-highlight"],
+        "rejectButton": ["#didomi-notice-disagree-button", ".didomi-button"]
+      }
+    },
+    {
+      "name": "Cookie Information",
+      "selectors": {
+        "banner": ["#cookie-information-template-wrapper", ".cookie-information-container"],
+        "acceptButton": [".cookie-information-accept-all"],
+        "rejectButton": [".cookie-information-reject-all"]
+      }
+    },
+    {
+      "name": "Osano",
+      "selectors": {
+        "banner": [".osano-cm-widget", ".osano-cm-dialog"],
+        "acceptButton": [".osano-cm-accept-all", ".osano-cm-accept"],
+        "rejectButton": [".osano-cm-deny", ".osano-cm-denyAll"]
+      }
+    },
+    {
+      "name": "Klaro",
+      "selectors": {
+        "banner": [".klaro", ".cookie-modal"],
+        "acceptButton": [".cm-btn-accept-all"],
+        "rejectButton": [".cm-btn-decline"]
+      }
+    },
+    {
+      "name": "CookieConsent",
+      "selectors": {
+        "banner": [".cc-window", ".cc-banner"],
+        "acceptButton": [".cc-allow", ".cc-btn-accept-all"],
+        "rejectButton": [".cc-deny", ".cc-dismiss"]
+      }
+    }
+  ],
+  "buttonPatterns": {
+    "accept": {
+      "en": ["accept all", "accept cookies", "allow all", "allow cookies", "agree", "ok", "i agree", "got it", "continue"],
+      "pl": ["akceptuj wszystkie", "akceptuj cookies", "zgadzam się", "rozumiem", "akceptuję"],
+      "de": ["alle akzeptieren", "akzeptieren", "einverstanden", "zustimmen", "verstanden"],
+      "fr": ["tout accepter", "accepter", "j'accepte", "d'accord", "ok"],
+      "es": ["aceptar todo", "aceptar cookies", "aceptar", "de acuerdo", "entendido"]
+    },
+    "reject": {
+      "en": ["reject all", "deny all", "decline", "refuse", "reject cookies", "no thanks", "only necessary"],
+      "pl": ["odrzuć wszystkie", "odmów", "tylko niezbędne", "nie zgadzam się"],
+      "de": ["alle ablehnen", "ablehnen", "zurückweisen", "nur notwendige"],
+      "fr": ["tout refuser", "refuser", "rejeter", "seulement nécessaires"],
+      "es": ["rechazar todo", "rechazar", "denegar", "solo necesarias"]
+    }
+  },
+  "cssPatterns": {
+    "banner": [
+      "[class*='cookie'][class*='banner']",
+      "[class*='cookie'][class*='consent']",
+      "[class*='gdpr']",
+      "[id*='cookie'][id*='banner']",
+      "[id*='cookie'][id*='consent']",
+      "[class*='privacy'][class*='notice']",
+      "[class*='consent'][class*='modal']"
+    ],
+    "overlay": [
+      "[class*='overlay'][style*='position: fixed']",
+      "[class*='modal'][style*='z-index']",
+      "div[style*='z-index: 999']",
+      "div[style*='z-index: 9999']"
+    ]
+  },
+  "keywords": {
+    "en": ["cookie", "consent", "gdpr", "privacy", "tracking", "data protection"],
+    "pl": ["ciasteczka", "zgoda", "rodo", "prywatność", "śledzenie"],
+    "de": ["keks", "einwilligung", "datenschutz", "cookies"],
+    "fr": ["cookie", "consentement", "confidentialité", "données"],
+    "es": ["cookie", "consentimiento", "privacidad", "datos"]
+  }
+}

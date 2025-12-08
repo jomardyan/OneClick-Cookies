@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OneClick Cookies</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <h1>🍪 OneClick Cookies</h1>
+      <p class="subtitle">Cookie Consent Manager</p>
+    </header>
+
+    <!-- Mode Selection -->
+    <section class="mode-section">
+      <h2>Mode</h2>
+      <div class="mode-buttons">
+        <button id="mode-manual" class="mode-btn active" data-mode="manual">
+          <span class="icon">👆</span>
+          <span class="label">Manual</span>
+        </button>
+        <button id="mode-auto-accept" class="mode-btn" data-mode="auto-accept">
+          <span class="icon">✅</span>
+          <span class="label">Auto Accept</span>
+        </button>
+        <button id="mode-auto-deny" class="mode-btn" data-mode="auto-deny">
+          <span class="icon">❌</span>
+          <span class="label">Auto Deny</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Manual Controls -->
+    <section class="manual-section" id="manual-controls">
+      <h2>Manual Control</h2>
+      <div class="manual-buttons">
+        <button id="btn-accept" class="action-btn accept-btn">
+          Accept All Cookies
+        </button>
+        <button id="btn-deny" class="action-btn deny-btn">
+          Deny All Cookies
+        </button>
+      </div>
+      <div id="manual-status" class="status-message"></div>
+    </section>
+
+    <!-- Current Site -->
+    <section class="site-section">
+      <h2>Current Site</h2>
+      <div id="current-domain" class="domain-display">-</div>
+      <div class="site-controls">
+        <button id="btn-whitelist" class="site-btn">
+          Add to Whitelist
+        </button>
+        <button id="btn-blacklist" class="site-btn">
+          Add to Blacklist
+        </button>
+      </div>
+      <div class="list-display">
+        <div class="list-item">
+          <strong>Whitelisted:</strong>
+          <div id="whitelist-display" class="list-content">None</div>
+        </div>
+        <div class="list-item">
+          <strong>Blacklisted:</strong>
+          <div id="blacklist-display" class="list-content">None</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Statistics -->
+    <section class="stats-section">
+      <h2>Statistics</h2>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-value" id="stat-detected">0</div>
+          <div class="stat-label">Banners Detected</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="stat-handled">0</div>
+          <div class="stat-label">Banners Handled</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="stat-sites">0</div>
+          <div class="stat-label">Sites Visited</div>
+        </div>
+      </div>
+      <button id="btn-reset-stats" class="reset-btn">Reset Statistics</button>
+    </section>
+
+    <!-- Settings -->
+    <section class="settings-section">
+      <h2>Settings</h2>
+      <div class="setting-item">
+        <label for="debug-mode">
+          <input type="checkbox" id="debug-mode">
+          Debug Mode (Console Logging)
+        </label>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <p class="version">v1.0.0</p>
+      <p class="credits">Made with ❤️ for privacy</p>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
