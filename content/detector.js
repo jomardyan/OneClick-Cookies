@@ -223,16 +223,30 @@ class ConsentDetector {
    */
   hasConsent(element) {
     const text = (element.innerText || element.textContent || '').toLowerCase();
-    const hasConsent = text.includes('consent') || 
+    
+    let hasConsentText = false;
+    
+    // Use patterns if available
+    if (this.patterns?.keywords) {
+      for (const lang in this.patterns.keywords) {
+        if (this.patterns.keywords[lang].some(k => text.includes(k.toLowerCase()))) {
+          hasConsentText = true;
+          break;
+        }
+      }
+    } else {
+      // Fallback
+      hasConsentText = text.includes('consent') || 
                        text.includes('cookie') || 
                        text.includes('privacy') ||
                        text.includes('agree') ||
                        text.includes('accept') ||
                        text.includes('decline');
+    }
     
     const hasButtons = element.querySelectorAll('button, a, [role="button"]').length >= 1;
     
-    return hasConsent && hasButtons;
+    return hasConsentText && hasButtons;
   }
 
   /**
@@ -247,11 +261,20 @@ class ConsentDetector {
     const buttons = element.querySelectorAll('button, a, [role="button"]');
 
     // Award points for consent-related keywords
-    const consentKeywords = ['consent', 'cookie', 'privacy', 'tracking', 'data protection', 'gdpr'];
     let keywordMatches = 0;
-    for (const keyword of consentKeywords) {
-      if (text.includes(keyword)) keywordMatches++;
+    
+    if (this.patterns?.keywords) {
+      const allKeywords = Object.values(this.patterns.keywords).flat();
+      for (const keyword of allKeywords) {
+        if (text.includes(keyword.toLowerCase())) keywordMatches++;
+      }
+    } else {
+      const consentKeywords = ['consent', 'cookie', 'privacy', 'tracking', 'data protection', 'gdpr'];
+      for (const keyword of consentKeywords) {
+        if (text.includes(keyword)) keywordMatches++;
+      }
     }
+    
     confidence += Math.min(keywordMatches * 0.05, 0.15);
 
     // Award points for action buttons
@@ -263,11 +286,23 @@ class ConsentDetector {
 
     // Check for typical button text patterns
     const buttonTexts = Array.from(buttons).map(b => (b.textContent || b.innerText || '').toLowerCase()).join(' ');
-    const actionWords = ['accept', 'reject', 'agree', 'disagree', 'allow', 'deny', 'ok', 'decline', 'refuse'];
     let actionMatches = 0;
-    for (const word of actionWords) {
-      if (buttonTexts.includes(word)) actionMatches++;
+    
+    if (this.patterns?.buttonPatterns) {
+      const allActions = [
+        ...Object.values(this.patterns.buttonPatterns.accept).flat(),
+        ...Object.values(this.patterns.buttonPatterns.reject).flat()
+      ];
+      for (const word of allActions) {
+        if (buttonTexts.includes(word.toLowerCase())) actionMatches++;
+      }
+    } else {
+      const actionWords = ['accept', 'reject', 'agree', 'disagree', 'allow', 'deny', 'ok', 'decline', 'refuse'];
+      for (const word of actionWords) {
+        if (buttonTexts.includes(word)) actionMatches++;
+      }
     }
+    
     confidence += Math.min(actionMatches * 0.05, 0.15);
 
     // Check size - should not be tiny

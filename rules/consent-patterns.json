@@ -76,14 +76,14 @@
   "buttonPatterns": {
     "accept": {
       "en": ["accept all", "accept cookies", "allow all", "allow cookies", "agree", "ok", "i agree", "got it", "continue"],
-      "pl": ["akceptuj wszystkie", "akceptuj cookies", "zgadzam się", "rozumiem", "akceptuję"],
+      "pl": ["akceptuj wszystkie", "akceptuj cookies", "zgadzam się", "rozumiem", "akceptuję", "zezwól na wszystkie", "zezwól na wszystkie ciasteczka"],
       "de": ["alle akzeptieren", "akzeptieren", "einverstanden", "zustimmen", "verstanden"],
       "fr": ["tout accepter", "accepter", "j'accepte", "d'accord", "ok"],
       "es": ["aceptar todo", "aceptar cookies", "aceptar", "de acuerdo", "entendido"]
     },
     "reject": {
       "en": ["reject all", "deny all", "decline", "refuse", "reject cookies", "no thanks", "only necessary"],
-      "pl": ["odrzuć wszystkie", "odmów", "tylko niezbędne", "nie zgadzam się"],
+      "pl": ["odrzuć wszystkie", "odmów", "tylko niezbędne", "nie zgadzam się", "korzystaj wyłącznie z niezbędnych plików cookie"],
       "de": ["alle ablehnen", "ablehnen", "zurückweisen", "nur notwendige"],
       "fr": ["tout refuser", "refuser", "rejeter", "seulement nécessaires"],
       "es": ["rechazar todo", "rechazar", "denegar", "solo necesarias"]

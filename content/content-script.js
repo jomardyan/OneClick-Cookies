@@ -376,9 +376,7 @@ log('Manual accept requested from popup');
             sendResponse({ error: 'Unknown action' });
         }
       } catch (error) {
-        console.error('[OneClick Cookies] Message handler error:', error);e({ error: 'Unknown action' });
-        }
-      } catch (error) {
+        console.error('[OneClick Cookies] Message handler error:', error);
         sendResponse({ error: error.message });
       }
     })();
