@@ -238,6 +238,9 @@ async function addToList(listName, domain) {
  */
 async function removeFromList(listName, domain) {
   const config = await getConfig();
+  if (!config[listName]) {
+    config[listName] = [];
+  }
   const index = config[listName].indexOf(domain);
   if (index > -1) {
     config[listName].splice(index, 1);
