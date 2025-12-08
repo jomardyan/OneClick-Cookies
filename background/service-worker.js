@@ -127,16 +127,16 @@ function handleMessage(message, sender, sendResponse) {
           break;
 
         case 'exportSettings':
-          const config = await getConfig();
-          const stats = await getStats();
+          const exportConfig = await getConfig();
+          const exportStats = await getStats();
           const exportData = {
             version: '1.0.0',
             exportDate: new Date().toISOString(),
-            config: config,
+            config: exportConfig,
             stats: {
-              bannersDetected: stats.bannersDetected,
-              bannersHandled: stats.bannersHandled,
-              sitesVisited: stats.sitesVisited
+              bannersDetected: exportStats.bannersDetected,
+              bannersHandled: exportStats.bannersHandled,
+              sitesVisited: exportStats.sitesVisited
             }
           };
           sendResponse({ success: true, data: exportData });
