@@ -19,6 +19,9 @@ Thumbs.db
 tmp/
 *.log
 
+# Test files (for local testing only)
+test/
+
 # Package files
 *.crx
 *.pem
