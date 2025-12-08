@@ -126,8 +126,30 @@ function handleMessage(message, sender, sendResponse) {
           sendResponse({ success: true });
           break;
 
-        default:
-          sendResponse({ success: false, error: 'Unknown action' });
+        case 'exportSettings':
+          const config = await getConfig();
+          const stats = await getStats();
+          const exportData = {
+            version: '1.0.0',
+            exportDate: new Date().toISOString(),
+            config: config,
+            stats: {
+              bannersDetected: stats.bannersDetected,
+              bannersHandled: stats.bannersHandled,
+              sitesVisited: stats.sitesVisited
+            }
+          };
+          sendResponse({ success: true, data: exportData });
+          break;
+
+        case 'importSettings':
+          try {
+            await importSettings(message.data);
+            sendResponse({ success: true, message: 'Settings imported successfully' });
+          } catch (error) {
+            sendResponse({ success: false, error: error.message });
+          }
+          break;
       }
     } catch (error) {
       console.error('[OneClick Cookies] Message handler error:', error);
@@ -324,6 +346,53 @@ async function resetStats() {
     lastReset: Date.now()
   };
   await saveStats();
+}
+
+/**
+ * Import settings from export file
+ * @param {Object} importData - Data from export
+ */
+async function importSettings(importData) {
+  if (!importData || !importData.config) {
+    throw new Error('Invalid import data format');
+  }
+
+  // Validate structure
+  if (typeof importData.config !== 'object') {
+    throw new Error('Invalid config structure');
+  }
+
+  // Import configuration
+  const configToImport = {
+    mode: importData.config.mode || DEFAULT_CONFIG.mode,
+    debugMode: importData.config.debugMode || DEFAULT_CONFIG.debugMode,
+    whitelist: Array.isArray(importData.config.whitelist) ? importData.config.whitelist : [],
+    blacklist: Array.isArray(importData.config.blacklist) ? importData.config.blacklist : []
+  };
+
+  await chrome.storage.sync.set(configToImport);
+
+  // Optionally import statistics if provided
+  if (importData.stats) {
+    stats.bannersDetected = importData.stats.bannersDetected || 0;
+    stats.bannersHandled = importData.stats.bannersHandled || 0;
+    // Don't merge sitesVisited as it's based on current session
+    await saveStats();
+  }
+
+  // Notify all content scripts about update
+  await notifyConfigUpdate();
+
+  console.log('[OneClick Cookies] Settings imported successfully');
+}
+
+/**
+ * Export settings to JSON
+ * @param {Object} exportData
+ * @returns {string} JSON string for download
+ */
+function getExportJSON(exportData) {
+  return JSON.stringify(exportData, null, 2);
 }
 
 // Initialize the service worker

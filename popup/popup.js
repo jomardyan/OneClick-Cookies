@@ -32,7 +32,10 @@ const elements = {
   btnResetStats: document.getElementById('btn-reset-stats'),
   
   // Settings
-  debugMode: document.getElementById('debug-mode')
+  debugMode: document.getElementById('debug-mode'),
+  btnExport: document.getElementById('btn-export'),
+  btnImport: document.getElementById('btn-import'),
+  importFile: document.getElementById('import-file')
 };
 
 let currentConfig = null;
@@ -140,6 +143,11 @@ function setupEventListeners() {
   
   // Settings
   elements.debugMode.addEventListener('change', handleDebugModeToggle);
+  
+  // Import/Export
+  elements.btnExport.addEventListener('click', handleExportSettings);
+  elements.btnImport.addEventListener('click', () => elements.importFile.click());
+  elements.importFile.addEventListener('change', handleImportSettings);
 }
 
 /**
@@ -235,17 +243,27 @@ async function setMode(mode) {
  */
 async function handleManualAccept() {
   try {
-    showStatus('Attempting to accept cookies...', 'info');
+    showStatus('Detecting banner...', 'info');
     
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    const response = await chrome.tabs.sendMessage(tab.id, { action: 'manualAccept' });
     
-    if (response.success) {
-      showStatus('✓ Cookies accepted successfully!', 'success');
+    // First, check if banner is detected
+    const checkResponse = await chrome.tabs.sendMessage(tab.id, { action: 'detectBanner' });
+    
+    if (checkResponse.detected) {
+      showStatus('Accepting cookies...', 'info');
+      const response = await chrome.tabs.sendMessage(tab.id, { action: 'manualAccept' });
+      
+      if (response.success) {
+        showStatus('✓ Cookies accepted successfully!', 'success');
+      } else {
+        showStatus('✗ Failed to accept cookies', 'error');
+      }
     } else {
-      showStatus('✗ ' + (response.error || 'Failed to accept cookies'), 'error');
+      showStatus('✗ No banner detected on this page', 'error');
     }
   } catch (error) {
+    console.error('[OneClick Cookies] Error:', error);
     showStatus('✗ Error: ' + error.message, 'error');
   }
 }
@@ -255,17 +273,27 @@ async function handleManualAccept() {
  */
 async function handleManualDeny() {
   try {
-    showStatus('Attempting to deny cookies...', 'info');
+    showStatus('Detecting banner...', 'info');
     
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    const response = await chrome.tabs.sendMessage(tab.id, { action: 'manualDeny' });
     
-    if (response.success) {
-      showStatus('✓ Cookies denied successfully!', 'success');
+    // First, check if banner is detected
+    const checkResponse = await chrome.tabs.sendMessage(tab.id, { action: 'detectBanner' });
+    
+    if (checkResponse.detected) {
+      showStatus('Denying cookies...', 'info');
+      const response = await chrome.tabs.sendMessage(tab.id, { action: 'manualDeny' });
+      
+      if (response.success) {
+        showStatus('✓ Cookies denied successfully!', 'success');
+      } else {
+        showStatus('✗ Failed to deny cookies', 'error');
+      }
     } else {
-      showStatus('✗ ' + (response.error || 'Failed to deny cookies'), 'error');
+      showStatus('✗ No banner detected on this page', 'error');
     }
   } catch (error) {
+    console.error('[OneClick Cookies] Error:', error);
     showStatus('✗ Error: ' + error.message, 'error');
   }
 }
@@ -357,6 +385,72 @@ async function handleDebugModeToggle() {
     });
   } catch (error) {
     console.error('[OneClick Cookies] Failed to toggle debug mode:', error);
+  }
+}
+
+/**
+ * Handle export settings
+ */
+async function handleExportSettings() {
+  try {
+    const response = await chrome.runtime.sendMessage({ action: 'exportSettings' });
+    
+    if (response.success) {
+      const dataStr = JSON.stringify(response.data, null, 2);
+      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(dataBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `oneclick-cookies-backup-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      showStatus('✓ Settings exported successfully!', 'success');
+    }
+  } catch (error) {
+    console.error('[OneClick Cookies] Export failed:', error);
+    showStatus('✗ Export failed: ' + error.message, 'error');
+  }
+}
+
+/**
+ * Handle import settings
+ */
+async function handleImportSettings() {
+  try {
+    const file = elements.importFile.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const importData = JSON.parse(e.target.result);
+        const response = await chrome.runtime.sendMessage({
+          action: 'importSettings',
+          data: importData
+        });
+
+        if (response.success) {
+          // Reload configuration
+          await loadConfig();
+          updateUI();
+          showStatus('✓ Settings imported successfully!', 'success');
+        } else {
+          showStatus('✗ Import failed: ' + response.error, 'error');
+        }
+      } catch (error) {
+        showStatus('✗ Invalid file format', 'error');
+        console.error('[OneClick Cookies] Import error:', error);
+      }
+    };
+    reader.readAsText(file);
+    
+    // Reset file input
+    elements.importFile.value = '';
+  } catch (error) {
+    showStatus('✗ Import error: ' + error.message, 'error');
   }
 }
 

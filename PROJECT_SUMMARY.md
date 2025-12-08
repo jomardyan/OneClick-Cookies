@@ -5,8 +5,9 @@
 **OneClick Cookies** is a complete, production-ready Manifest V3 browser extension for Microsoft Edge and Chrome that automatically detects and handles cookie consent banners.
 
 **Repository**: https://github.com/jomardyan/OneClick-Cookies
+**Author**: Hayk Jomardyan
 **Status**: ✅ Complete and ready for use
-**Version**: 1.0.0
+**Version**: 1.1.0
 **Last Updated**: December 8, 2025
 
 ---
@@ -23,6 +24,9 @@ All requirements from the problem statement have been successfully implemented:
 - [x] Popup UI with mode toggles
 - [x] Domain whitelist/blacklist management
 - [x] Statistics tracking
+- [x] Import/Export settings feature
+- [x] Enhanced generic banner detection
+- [x] Iframe detection support
 
 ### ✅ Technical Stack
 - [x] Vanilla JavaScript (no frameworks)
@@ -36,6 +40,9 @@ All requirements from the problem statement have been successfully implemented:
 - [x] CSS selector patterns (fixed/sticky elements)
 - [x] Shadow DOM support
 - [x] Mutation observers for dynamic banners
+- [x] Generic banner detection (heuristic-based)
+- [x] Iframe banner detection
+- [x] Individual developer-created banners
 
 ### ✅ Button Interaction
 - [x] Smart button text pattern matching
@@ -116,7 +123,19 @@ OneClick-Cookies/
 1. **Known CMP** (95% confidence) - Database of 9 major CMPs
 2. **Keyword Matching** (70-90% confidence) - Multi-language keywords
 3. **CSS Patterns** (60% confidence) - Generic selectors
-4. **Shadow DOM** (70% confidence) - Hidden elements
+4. **Generic Banners** (50-95% confidence) - Heuristic-based detection for custom-built banners
+5. **Shadow DOM** (70% confidence) - Hidden elements
+6. **Iframes** (65% confidence) - Banners within iframes
+
+**Generic Banner Detection Features:**
+- Analyzes element structure and positioning
+- Detects consent-related keywords and buttons
+- Calculates confidence scores based on:
+  - Presence of consent keywords
+  - Number and type of action buttons
+  - Button text pattern matching
+  - Element size and visibility
+- Supports both standard and custom-built consent interfaces
 
 **Supported CMPs:**
 - OneTrust
@@ -166,6 +185,13 @@ OneClick-Cookies/
 4. **Settings**
    - Debug mode toggle
    - Console logging for troubleshooting
+   - Import/Export settings for backup and transfer
+
+5. **Advanced Detection**
+   - Generic banner detection for custom-built banners
+   - Iframe banner detection
+   - Heuristic confidence scoring
+   - Multi-layer detection fallback
 
 ### Developer Features
 1. **Validation Script**
@@ -294,7 +320,7 @@ OneClick-Cookies/
 
 ## 🚧 Known Limitations
 
-1. **Iframe Banners**: Not currently supported
+1. ~~Iframe Banners~~ ✅ **Now Supported**
 2. **Complex Flows**: Some multi-step consents may need manual intervention
 3. **Dark Patterns**: Basic detection only
 4. **Platform**: Chromium-based browsers only
@@ -304,13 +330,15 @@ OneClick-Cookies/
 ## 🔮 Future Enhancements
 
 ### Planned Features
-- [ ] Iframe support
+- [x] Iframe support ✅ **IMPLEMENTED**
+- [x] Import/export settings ✅ **IMPLEMENTED**
 - [ ] Additional CMP database entries
 - [ ] Enhanced dark pattern detection
-- [ ] Import/export settings
 - [ ] Firefox support
 - [ ] Custom consent preferences
 - [ ] More granular cookie control
+- [ ] Machine learning-based detection
+- [ ] Browser-specific optimizations
 
 ### Community Contributions Welcome
 - Adding new CMP selectors
@@ -384,4 +412,4 @@ The extension is fully functional and ready for:
 
 **Made with ❤️ for a cleaner, more private web experience**
 
-**Version 1.0.0** | **December 2025** | **MIT Licensed**
+**Version 1.1.0** | **December 2025** | **MIT Licensed** | **By Hayk Jomardyan**

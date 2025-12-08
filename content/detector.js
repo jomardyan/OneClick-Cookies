@@ -26,6 +26,7 @@ class ConsentDetector {
       this.detectKnownCMP(),
       this.detectByKeywords(),
       this.detectByCSSPatterns(),
+      this.detectGenericBanners(),
       this.detectInShadowDOM()
     ];
 
@@ -84,11 +85,12 @@ class ConsentDetector {
     const overlays = this.findOverlays();
     
     for (const overlay of overlays) {
-      const text = overlay.innerText?.toLowerCase() || '';
+      const text = (overlay.innerText || overlay.textContent || '').toLowerCase();
       
       // Count keyword matches
       let matchCount = 0;
       for (const keyword of allKeywords) {
+        // Use word boundary matching to avoid partial matches
         if (text.includes(keyword.toLowerCase())) {
           matchCount++;
         }
@@ -96,7 +98,7 @@ class ConsentDetector {
 
       // If we have 2+ keyword matches, likely a consent banner
       if (matchCount >= 2) {
-        this.log(`Detected by keywords: ${matchCount} matches`);
+        this.log(`Detected by keywords: ${matchCount} matches in overlay`);
         return {
           type: 'keyword',
           banner: overlay,
@@ -161,6 +163,172 @@ class ConsentDetector {
   }
 
   /**
+   * Detect generic banners created by individual developers
+   * Uses heuristic patterns and structural analysis
+   * @returns {Object|null} Detection result
+   */
+  detectGenericBanners() {
+    // Find all potential banner containers
+    const potentialBanners = [];
+    const overlays = this.findOverlays();
+
+    for (const overlay of overlays) {
+      // Check if it looks like a banner
+      if (this.looksLikeBanner(overlay) && this.hasConsent(overlay)) {
+        const confidence = this.calculateBannerConfidence(overlay);
+        if (confidence >= 0.5) {
+          potentialBanners.push({
+            element: overlay,
+            confidence: confidence,
+            reason: 'heuristic'
+          });
+        }
+      }
+    }
+
+    // Also check iframes for banners
+    const iframeBanners = this.detectInIframes();
+    if (iframeBanners) {
+      potentialBanners.push({
+        element: iframeBanners.element,
+        confidence: iframeBanners.confidence,
+        reason: 'iframe',
+        isIframe: true
+      });
+    }
+
+    if (potentialBanners.length === 0) {
+      return null;
+    }
+
+    // Return highest confidence result
+    potentialBanners.sort((a, b) => b.confidence - a.confidence);
+    const best = potentialBanners[0];
+
+    this.log(`Detected generic banner via ${best.reason} (confidence: ${best.confidence})`);
+
+    return {
+      type: 'generic',
+      banner: best.element,
+      confidence: best.confidence,
+      isIframe: best.isIframe || false,
+      reason: best.reason
+    };
+  }
+
+  /**
+   * Check if element has consent-related text or buttons
+   * @param {Element} element
+   * @returns {boolean}
+   */
+  hasConsent(element) {
+    const text = (element.innerText || element.textContent || '').toLowerCase();
+    const hasConsent = text.includes('consent') || 
+                       text.includes('cookie') || 
+                       text.includes('privacy') ||
+                       text.includes('agree') ||
+                       text.includes('accept') ||
+                       text.includes('decline');
+    
+    const hasButtons = element.querySelectorAll('button, a, [role="button"]').length >= 1;
+    
+    return hasConsent && hasButtons;
+  }
+
+  /**
+   * Calculate confidence score for generic banner
+   * @param {Element} element
+   * @returns {number} Confidence between 0 and 1
+   */
+  calculateBannerConfidence(element) {
+    let confidence = 0.4; // Base confidence for overlay elements
+
+    const text = (element.innerText || element.textContent || '').toLowerCase();
+    const buttons = element.querySelectorAll('button, a, [role="button"]');
+
+    // Award points for consent-related keywords
+    const consentKeywords = ['consent', 'cookie', 'privacy', 'tracking', 'data protection', 'gdpr'];
+    let keywordMatches = 0;
+    for (const keyword of consentKeywords) {
+      if (text.includes(keyword)) keywordMatches++;
+    }
+    confidence += Math.min(keywordMatches * 0.05, 0.15);
+
+    // Award points for action buttons
+    if (buttons.length >= 2) {
+      confidence += 0.15; // Likely has accept/reject pair
+    } else if (buttons.length >= 1) {
+      confidence += 0.08; // At least has one button
+    }
+
+    // Check for typical button text patterns
+    const buttonTexts = Array.from(buttons).map(b => (b.textContent || b.innerText || '').toLowerCase()).join(' ');
+    const actionWords = ['accept', 'reject', 'agree', 'disagree', 'allow', 'deny', 'ok', 'decline', 'refuse'];
+    let actionMatches = 0;
+    for (const word of actionWords) {
+      if (buttonTexts.includes(word)) actionMatches++;
+    }
+    confidence += Math.min(actionMatches * 0.05, 0.15);
+
+    // Check size - should not be tiny
+    const rect = element.getBoundingClientRect();
+    if (rect.width > 200 && rect.height > 100) {
+      confidence += 0.1;
+    }
+
+    // Cap at 1.0
+    return Math.min(confidence, 0.95);
+  }
+
+  /**
+   * Detect banners in iframes
+   * @returns {Object|null} Detection result with iframe reference
+   */
+  detectInIframes() {
+    try {
+      // Note: Can only access same-origin iframes
+      const iframes = document.querySelectorAll('iframe');
+      
+      for (const iframe of iframes) {
+        if (!this.isVisible(iframe)) continue;
+
+        try {
+          const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+          if (!iframeDoc) continue;
+
+          // Search for consent patterns in iframe
+          const elements = iframeDoc.querySelectorAll('*');
+          for (const element of elements) {
+            if (!this.isVisible(element)) continue;
+
+            const text = (element.innerText || element.textContent || '').toLowerCase();
+            const hasConsent = text.includes('consent') || 
+                              text.includes('cookie') ||
+                              text.includes('privacy');
+
+            if (hasConsent && this.hasConsent(element)) {
+              this.log('Detected banner in iframe');
+              return {
+                element: element,
+                confidence: 0.65,
+                iframe: iframe,
+                iframeDoc: iframeDoc
+              };
+            }
+          }
+        } catch (e) {
+          // Cross-origin iframe, skip
+          continue;
+        }
+      }
+    } catch (e) {
+      // Iframes not accessible, continue with other detection methods
+    }
+
+    return null;
+  }
+
+  /**
    * Detect within a shadow root
    * @param {ShadowRoot} shadowRoot
    * @returns {Element|null}
@@ -205,8 +373,11 @@ class ConsentDetector {
       const zIndex = parseInt(style.zIndex, 10);
       const position = style.position;
 
-      if ((position === 'fixed' || position === 'sticky') && 
-          !isNaN(zIndex) && zIndex > 100 &&
+      // Include fixed, sticky, and absolute positioned elements with reasonable z-index
+      // Lowered threshold to catch more potential banners
+      if ((position === 'fixed' || position === 'sticky' || 
+           (position === 'absolute' && zIndex > 50)) && 
+          !isNaN(zIndex) && zIndex > 50 &&
           this.isVisible(element)) {
         overlays.push(element);
       }

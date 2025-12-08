@@ -3,6 +3,7 @@
   "name": "OneClick Cookies",
   "version": "1.0.0",
   "description": "Automatically accept or deny cookie consent banners with one click",
+  "author": "Hayk Jomardyan",
   "permissions": [
     "storage",
     "activeTab",

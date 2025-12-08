@@ -311,6 +311,33 @@ section h2 {
   cursor: pointer;
 }
 
+.export-import-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.settings-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  background: white;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.settings-btn:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.settings-btn:active {
+  background: #e5e7eb;
+}
+
 /* Footer */
 footer {
   padding: 15px 20px;

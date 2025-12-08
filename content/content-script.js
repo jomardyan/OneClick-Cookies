@@ -128,6 +128,8 @@
           // Auto-accept for whitelisted domains
           await handleAccept(detection);
         }
+      } else {
+        log('No banner detected on page');
       }
 
       processingBanner = false;
@@ -319,23 +321,45 @@
             await loadConfig();
             sendResponse({ success: true });
             break;
-
-          case 'manualAccept':
-            const detection = detector.detect();
+log('Manual accept requested from popup');
+            // Try to detect banner with retry logic
+            let detection = detector.detect();
+            
+            // If not detected, wait a moment and try again
+            if (!detection) {
+              log('Banner not detected on first attempt, retrying...');
+              await sleep(300);
+              detection = detector.detect();
+            }
+            
             if (detection) {
+              log('Banner found, executing accept action');
               await handleAccept(detection);
               sendResponse({ success: true });
             } else {
+              log('No banner detected after retry');
               sendResponse({ success: false, error: 'No banner detected' });
             }
             break;
 
           case 'manualDeny':
-            const detection2 = detector.detect();
+            log('Manual deny requested from popup');
+            // Try to detect banner with retry logic
+            let detection2 = detector.detect();
+            
+            // If not detected, wait a moment and try again
+            if (!detection2) {
+              log('Banner not detected on first attempt, retrying...');
+              await sleep(300);
+              detection2 = detector.detect();
+            }
+            
             if (detection2) {
+              log('Banner found, executing deny action');
               await handleDeny(detection2);
               sendResponse({ success: true });
             } else {
+              log('No banner detected after retry');
               sendResponse({ success: false, error: 'No banner detected' });
             }
             break;
@@ -350,6 +374,9 @@
 
           default:
             sendResponse({ error: 'Unknown action' });
+        }
+      } catch (error) {
+        console.error('[OneClick Cookies] Message handler error:', error);e({ error: 'Unknown action' });
         }
       } catch (error) {
         sendResponse({ error: error.message });
