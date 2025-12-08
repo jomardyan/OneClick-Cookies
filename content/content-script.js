@@ -170,6 +170,8 @@
     if (clicked) {
       log('Successfully accepted cookies');
       await notifyBannerHandled('accept');
+      // Clear detection cache after handling
+      if (detector) detector.clearCache();
     } else {
       log('Failed to find accept button');
     }
@@ -206,6 +208,8 @@
     if (clicked) {
       log('Successfully denied cookies');
       await notifyBannerHandled('deny');
+      // Clear detection cache after handling
+      if (detector) detector.clearCache();
     } else {
       log('Failed to find deny button, trying accept as fallback');
       // Some sites only have accept, better to accept than leave banner
@@ -321,7 +325,9 @@
             await loadConfig();
             sendResponse({ success: true });
             break;
-log('Manual accept requested from popup');
+
+          case 'manualAccept':
+            log('Manual accept requested from popup');
             // Try to detect banner with retry logic
             let detection = detector.detect();
             
