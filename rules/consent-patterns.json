@@ -116,7 +116,7 @@
       "[class*='modal'][style*='z-index']",
       "div[style*='z-index: 999']",
       "div[style*='z-index: 9999']"
-    "pl": ["ciasteczka", "zgoda", "rodo", "prywatność", "śledzenie", "plików cookie", "cookies", "pliki cookie"],
+    ]
   },
   "keywords": {
     "en": ["cookie", "consent", "gdpr", "privacy", "tracking", "data protection"],

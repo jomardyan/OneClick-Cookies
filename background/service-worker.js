@@ -21,6 +21,16 @@ const DEFAULT_CONFIG = {
   blacklist: []
 };
 
+function normalizeDomain(domain) {
+  if (!domain || typeof domain !== 'string') return null;
+  return domain.trim().toLowerCase();
+}
+
+function dedupeDomains(list) {
+  if (!Array.isArray(list)) return [];
+  return Array.from(new Set(list.map(d => normalizeDomain(d)).filter(Boolean)));
+}
+
 /**
  * Initialize service worker
  */
@@ -150,6 +160,10 @@ function handleMessage(message, sender, sendResponse) {
             sendResponse({ success: false, error: error.message });
           }
           break;
+
+        default:
+          sendResponse({ success: false, error: 'Unknown action' });
+          break;
       }
     } catch (error) {
       console.error('[OneClick Cookies] Message handler error:', error);
@@ -236,8 +250,16 @@ async function getConfig() {
  * @param {Object} config
  */
 async function updateConfig(config) {
-  await chrome.storage.sync.set(config);
-  console.log('[OneClick Cookies] Config updated:', config);
+  const current = await getConfig();
+  const nextConfig = {
+    ...current,
+    ...config,
+    whitelist: dedupeDomains(config?.whitelist ?? current.whitelist),
+    blacklist: dedupeDomains(config?.blacklist ?? current.blacklist)
+  };
+
+  await chrome.storage.sync.set(nextConfig);
+  console.log('[OneClick Cookies] Config updated:', nextConfig);
 }
 
 /**
@@ -246,10 +268,21 @@ async function updateConfig(config) {
  * @param {string} domain
  */
 async function addToList(listName, domain) {
+  const normalizedDomain = normalizeDomain(domain);
+  if (!normalizedDomain) return;
+
   const config = await getConfig();
-  if (!config[listName].includes(domain)) {
-    config[listName].push(domain);
-    await chrome.storage.sync.set({ [listName]: config[listName] });
+  const list = Array.isArray(config[listName]) ? [...config[listName]] : [];
+  const oppositeListName = listName === 'whitelist' ? 'blacklist' : 'whitelist';
+  const oppositeList = Array.isArray(config[oppositeListName]) ? [...config[oppositeListName]] : [];
+
+  if (!list.includes(normalizedDomain)) {
+    list.push(normalizedDomain);
+    const next = {
+      [listName]: dedupeDomains(list),
+      [oppositeListName]: dedupeDomains(oppositeList.filter(d => d !== normalizedDomain))
+    };
+    await chrome.storage.sync.set(next);
   }
 }
 
@@ -259,15 +292,14 @@ async function addToList(listName, domain) {
  * @param {string} domain
  */
 async function removeFromList(listName, domain) {
+  const normalizedDomain = normalizeDomain(domain);
   const config = await getConfig();
-  if (!config[listName]) {
-    config[listName] = [];
-  }
-  const index = config[listName].indexOf(domain);
-  if (index > -1) {
-    config[listName].splice(index, 1);
-    await chrome.storage.sync.set({ [listName]: config[listName] });
-  }
+  const list = Array.isArray(config[listName]) ? [...config[listName]] : [];
+
+  if (!normalizedDomain || list.length === 0) return;
+
+  const filtered = list.filter(d => d !== normalizedDomain);
+  await chrome.storage.sync.set({ [listName]: filtered });
 }
 
 /**

@@ -17,7 +17,27 @@
   let detector = null;
   let patterns = null;
   let observer = null;
+  let mutationTimeout = null;
   let processingBanner = false;
+
+  const FALLBACK_PATTERNS = {
+    knownCMPs: [],
+    buttonPatterns: {
+      accept: {
+        en: ['accept all', 'allow all', 'accept', 'agree', 'ok']
+      },
+      reject: {
+        en: ['reject all', 'deny all', 'decline', 'only necessary']
+      }
+    },
+    cssPatterns: {
+      banner: ["[class*='cookie']", "[id*='cookie']"],
+      overlay: []
+    },
+    keywords: {
+      en: ['cookie', 'consent', 'gdpr', 'privacy', 'tracking']
+    }
+  };
 
   /**
    * Initialize the content script
@@ -58,10 +78,14 @@
     try {
       const url = chrome.runtime.getURL('rules/consent-patterns.json');
       const response = await fetch(url);
-      return await response.json();
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      const data = await response.json();
+      return data;
     } catch (error) {
       console.error('[OneClick Cookies] Failed to load patterns:', error);
-      return null;
+      return FALLBACK_PATTERNS;
     }
   }
 
@@ -299,16 +323,23 @@
 
     observer = new MutationObserver((mutations) => {
       // Debounce detection calls
-      if (!processingBanner) {
-        setTimeout(() => detectAndProcess(), 1000);
+      if (processingBanner) return;
+      if (mutationTimeout) {
+        clearTimeout(mutationTimeout);
       }
+      mutationTimeout = setTimeout(() => {
+        mutationTimeout = null;
+        detectAndProcess();
+      }, 500);
     });
 
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-      attributes: false
-    });
+    if (document.body) {
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+        attributes: false
+      });
+    }
   }
 
   /**
