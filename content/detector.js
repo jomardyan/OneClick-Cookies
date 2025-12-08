@@ -235,11 +235,12 @@ class ConsentDetector {
       false
     );
 
-    let node;
-    while (node = walker.nextNode()) {
+    let node = walker.nextNode();
+    while (node !== null) {
       if (node.shadowRoot) {
         hosts.push(node);
       }
+      node = walker.nextNode();
     }
 
     return hosts;

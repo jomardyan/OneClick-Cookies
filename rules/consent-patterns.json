@@ -109,7 +109,7 @@
   "keywords": {
     "en": ["cookie", "consent", "gdpr", "privacy", "tracking", "data protection"],
     "pl": ["ciasteczka", "zgoda", "rodo", "prywatność", "śledzenie"],
-    "de": ["keks", "einwilligung", "datenschutz", "cookies"],
+    "de": ["cookie", "cookies", "einwilligung", "datenschutz", "kekse"],
     "fr": ["cookie", "consentement", "confidentialité", "données"],
     "es": ["cookie", "consentimiento", "privacidad", "datos"]
   }
