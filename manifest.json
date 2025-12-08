@@ -7,7 +7,8 @@
   "permissions": [
     "storage",
     "activeTab",
-    "scripting"
+    "scripting",
+    "declarativeNetRequest"
   ],
   "host_permissions": [
     "http://*/*",
@@ -20,7 +21,8 @@
     {
       "matches": ["http://*/*", "https://*/*"],
       "js": ["content/detector.js", "content/content-script.js"],
-      "run_at": "document_end",
+      "css": ["content/hide-banners.css"],
+      "run_at": "document_start",
       "all_frames": true
     }
   ],
@@ -38,6 +40,15 @@
     "32": "assets/icons/icon32.png",
     "48": "assets/icons/icon48.png",
     "128": "assets/icons/icon128.png"
+  },
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "cookie_scripts_blocker",
+        "enabled": true,
+        "path": "rules/blocking-rules.json"
+      }
+    ]
   },
   "web_accessible_resources": [
     {

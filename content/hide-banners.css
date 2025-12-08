@@ -1,0 +1,101 @@
+/* OneClick Cookies - CSS Banner Hiding Rules */
+/* Hide known cookie consent banners immediately on page load */
+
+/* Generic cookie banner patterns */
+[class*="cookie-banner"],
+[class*="cookie-notice"],
+[class*="cookie-consent"],
+[class*="gdpr-banner"],
+[class*="gdpr-notice"],
+[id*="cookie-banner"],
+[id*="cookie-notice"],
+[id*="cookie-consent"],
+[id*="gdpr-banner"] {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* Known CMP-specific selectors */
+
+/* Cookiebot */
+#CybotCookiebotDialog,
+#CookiebotWidget,
+[id*="Cookiebot"],
+[class*="Cookiebot"] {
+  display: none !important;
+}
+
+/* OneTrust */
+#onetrust-banner-sdk,
+#onetrust-consent-sdk,
+.onetrust-pc-dark-filter,
+[class*="onetrust-"] {
+  display: none !important;
+}
+
+/* Usercentrics */
+#usercentrics-root,
+[data-testid*="uc-"],
+.uc-banner-modal {
+  display: none !important;
+}
+
+/* Quantcast */
+#qc-cmp2-container,
+[class*="qc-cmp"] {
+  display: none !important;
+}
+
+/* TrustArc / Evidon */
+#teconsent,
+.truste_box_overlay,
+.truste_overlay {
+  display: none !important;
+}
+
+/* Didomi */
+#didomi-host,
+#didomi-popup,
+[class*="didomi-"] {
+  display: none !important;
+}
+
+/* Cookie Information */
+#coiPage,
+[id*="cookie-information"] {
+  display: none !important;
+}
+
+/* Osano */
+.osano-cm-dialog,
+.osano-cm-widget {
+  display: none !important;
+}
+
+/* Klaro */
+.klaro {
+  display: none !important;
+}
+
+/* Generic overlays and backdrops */
+.modal-backdrop,
+.cookie-overlay,
+[class*="cookie-backdrop"] {
+  display: none !important;
+}
+
+/* Restore body scroll if blocked by cookie banners */
+body.cookie-modal-open,
+body.modal-open {
+  overflow: auto !important;
+}
+
+/* Hide cookie-related modals */
+[role="dialog"][aria-label*="cookie"],
+[role="dialog"][aria-label*="Cookie"],
+[role="dialog"][aria-label*="consent"],
+[role="dialog"][aria-label*="Consent"],
+[role="dialog"][aria-label*="privacy"],
+[role="dialog"][aria-label*="Privacy"] {
+  display: none !important;
+}

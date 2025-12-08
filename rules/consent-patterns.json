@@ -11,9 +11,17 @@
     {
       "name": "Cookiebot",
       "selectors": {
-        "banner": ["#CybotCookiebotDialog", ".CybotCookiebotDialog"],
-        "acceptButton": ["#CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll", ".CybotCookiebotDialogBodyButton"],
-        "rejectButton": ["#CybotCookiebotDialogBodyButtonDecline", "#CybotCookiebotDialogBodyLevelButtonLevelOptinDeclineAll"]
+        "banner": ["#CybotCookiebotDialog", ".CybotCookiebotDialog", "[id*='Cookiebot']", "[class*='CookieBot']", "div[id^='Cybot']"],
+        "acceptButton": ["#CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll", "#CybotCookiebotDialogBodyButtonAccept", ".CybotCookiebotDialogBodyButton", "a[id*='AllowAll']", "button[id*='AllowAll']"],
+        "rejectButton": ["#CybotCookiebotDialogBodyButtonDecline", "#CybotCookiebotDialogBodyLevelButtonLevelOptinDeclineAll", "a[id*='Decline']", "button[id*='Decline']"]
+      }
+    },
+    {
+      "name": "Usercentrics",
+      "selectors": {
+        "banner": ["#usercentrics-root", "[data-testid='uc-container']", "[id*='usercentrics']", "div[class*='usercentrics']"],
+        "acceptButton": ["[data-testid='uc-accept-all-button']", "button[id*='accept-all']", "button[data-testid*='accept']"],
+        "rejectButton": ["[data-testid='uc-deny-all-button']", "button[id*='deny-all']", "button[data-testid*='deny']"]
       }
     },
     {
@@ -76,14 +84,14 @@
   "buttonPatterns": {
     "accept": {
       "en": ["accept all", "accept cookies", "allow all", "allow cookies", "agree", "ok", "i agree", "got it", "continue"],
-      "pl": ["akceptuj wszystkie", "akceptuj cookies", "zgadzam się", "rozumiem", "akceptuję", "zezwól na wszystkie", "zezwól na wszystkie ciasteczka"],
+      "pl": ["akceptuj wszystkie", "akceptuj cookies", "zgadzam się", "rozumiem", "akceptuję", "zezwól na wszystkie", "zezwól na wszystkie ciasteczka", "zezwól", "wszystkie ciasteczka", "na wszystkie ciasteczka"],
       "de": ["alle akzeptieren", "akzeptieren", "einverstanden", "zustimmen", "verstanden"],
       "fr": ["tout accepter", "accepter", "j'accepte", "d'accord", "ok"],
       "es": ["aceptar todo", "aceptar cookies", "aceptar", "de acuerdo", "entendido"]
     },
     "reject": {
       "en": ["reject all", "deny all", "decline", "refuse", "reject cookies", "no thanks", "only necessary"],
-      "pl": ["odrzuć wszystkie", "odmów", "tylko niezbędne", "nie zgadzam się", "korzystaj wyłącznie z niezbędnych plików cookie"],
+      "pl": ["odrzuć wszystkie", "odmów", "tylko niezbędne", "nie zgadzam się", "korzystaj wyłącznie z niezbędnych plików cookie", "wyłącznie niezbędnych", "niezbędnych"],
       "de": ["alle ablehnen", "ablehnen", "zurückweisen", "nur notwendige"],
       "fr": ["tout refuser", "refuser", "rejeter", "seulement nécessaires"],
       "es": ["rechazar todo", "rechazar", "denegar", "solo necesarias"]
@@ -97,14 +105,18 @@
       "[id*='cookie'][id*='banner']",
       "[id*='cookie'][id*='consent']",
       "[class*='privacy'][class*='notice']",
-      "[class*='consent'][class*='modal']"
+      "[class*='consent'][class*='modal']",
+      "[id*='consent']",
+      "[class*='consent']",
+      "[data-cookiebanner]",
+      "[data-consent]"
     ],
     "overlay": [
       "[class*='overlay'][style*='position: fixed']",
       "[class*='modal'][style*='z-index']",
       "div[style*='z-index: 999']",
       "div[style*='z-index: 9999']"
-    ]
+    "pl": ["ciasteczka", "zgoda", "rodo", "prywatność", "śledzenie", "plików cookie", "cookies", "pliki cookie"],
   },
   "keywords": {
     "en": ["cookie", "consent", "gdpr", "privacy", "tracking", "data protection"],
